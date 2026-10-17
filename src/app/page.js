@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import AcrobatSimulation from './AcrobatSimulation';
+import AcrobatSimulation from "./AcrobatSimulation";
 
 export default function Page() {
   return <AcrobatSimulation />;

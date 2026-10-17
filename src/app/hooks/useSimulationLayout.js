@@ -40,7 +40,7 @@ function useSimulationLayout(setPanelOpen) {
   useLayoutEffect(() => {
     const element = controlsRef.current;
     if (!element) return;
-    const measure = () => setControlsHeight(Math.ceil(element.getBoundingClientRect().height) + 32);
+    const measure = () => setControlsHeight(Math.ceil(element.getBoundingClientRect().height) + 60);
     measure();
     const observer = new ResizeObserver(measure);
     observer.observe(element);

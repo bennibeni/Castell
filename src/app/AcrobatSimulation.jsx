@@ -9,8 +9,9 @@ import { FOV } from './simulation/constants.js';
 import { Scene } from './scene/Scene.jsx';
 import { StatusPanels } from './ui/StatusPanels.jsx';
 import { SimulationControls } from './ui/SimulationControls.jsx';
+import "./globals.css";
 
-function AcrobatSimulation() {
+export default function AcrobatSimulation() {
   const simulation = useSimulation();
   const athleteAsset = useAthleteAsset(simulation.useExternalModel);
   const {
@@ -34,44 +35,62 @@ function AcrobatSimulation() {
   } = simulation;
   const { controlsRef, controlsHeight, topPx } = useSimulationLayout(setPanelOpen);
   return (
-    <div style={{ ...ui.root, top: topPx, height: `calc(100dvh - ${topPx}px)` }}>
-      <Canvas
-        style={{
-          position: 'absolute',
-          inset: 0,
-          width: '100%',
-          height: `calc(100% - ${controlsHeight}px)`,
-        }}
-        dpr={[1, 2]}
-        camera={{ position: [13.4, 2.0, 13.4], fov: FOV, near: 0.1, far: 200 }}
-        gl={{ antialias: true }}
-      >
-        <Scene
-          athleteScene={athleteAsset.scene}
-          plan={plan}
-          tRef={tRef}
-          playingRef={playingRef}
-          speedRef={speedRef}
-          onTick={onTick}
-          onEnd={onEnd}
-          onUserCamera={onUserCamera}
-          colorByRole={colorByRole}
-          mannequin={mannequin}
-          cutaway={cutaway}
-          guides={guides}
-          preset={preset}
-          viewOffsetRef={viewOffsetRef}
-          viewPendingRef={viewPendingRef}
+    <main>
+      <div style={{ ...ui.root, top: topPx, height: `calc(100dvh - ${topPx}px)` }}>
+        <Canvas
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: `calc(100% - ${controlsHeight}px)`,
+          }}
+          dpr={[1, 2]}
+          camera={{ position: [13.4, 2.0, 13.4], fov: FOV, near: 0.1, far: 200 }}
+          gl={{ antialias: true }}
+        >
+          <Scene
+            athleteScene={athleteAsset.scene}
+            plan={plan}
+            tRef={tRef}
+            playingRef={playingRef}
+            speedRef={speedRef}
+            onTick={onTick}
+            onEnd={onEnd}
+            onUserCamera={onUserCamera}
+            colorByRole={colorByRole}
+            mannequin={mannequin}
+            cutaway={cutaway}
+            guides={guides}
+            preset={preset}
+            viewOffsetRef={viewOffsetRef}
+            viewPendingRef={viewPendingRef}
+          />
+        </Canvas>
+        <StatusPanels plan={plan} uiT={uiT} panelOpen={panelOpen} setPanelOpen={setPanelOpen} />
+        <SimulationControls
+          controlsRef={controlsRef}
+          simulation={simulation}
+          modelStatus={athleteAsset}
         />
-      </Canvas>
-      <StatusPanels plan={plan} uiT={uiT} panelOpen={panelOpen} setPanelOpen={setPanelOpen} />
-      <SimulationControls
-        controlsRef={controlsRef}
-        simulation={simulation}
-        modelStatus={athleteAsset}
-      />
-    </div>
+        <footer
+          className="projects-footer"
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 1,
+            maxWidth: 'none',
+            padding: '6px 20px',
+            textAlign: 'center',
+            borderTopColor: 'rgba(255,255,255,0.08)',
+          }}
+        >
+          <a href="https://links-page-bennibeni.vercel.app/">
+            &larr; All projects
+          </a>
+        </footer>
+      </div>
+    </main>
   );
 }
-
-export default AcrobatSimulation;

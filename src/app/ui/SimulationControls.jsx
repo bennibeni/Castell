@@ -38,7 +38,7 @@ function SimulationControls({ controlsRef, simulation, modelStatus }) {
       style={{
         position: 'absolute',
         left: '50%',
-        bottom: 16,
+        bottom: 44,
         transform: 'translateX(-50%)',
         width: 'min(760px, calc(100vw - 32px))',
         display: 'flex',
