@@ -1,4 +1,4 @@
-import { FRAME_TOP, FRAME_BOTTOM, FOV } from '../simulation/constants.js';
+import { FRAME_TOP, FRAME_BOTTOM, FRAME_SHIFT, FOV } from '../simulation/constants.js';
 
 /* preset di camera */
 const CAM = {
@@ -12,14 +12,14 @@ function presetGoal(preset, top, pos, target) {
   switch (preset) {
     case 'video':
     case 'faccia': {
-      // inquadratura che si adatta all'altezza della torre: il pavimento sta appena sopra la barra
-      // dei comandi (a ~19% dal basso) e la cima con 2 m di margine arriva a ~6% dal bordo alto
+      // inquadratura adattiva: pavimento al 10% dal fondo e cima con 2 m di margine al 15% dall'alto
       const span = top + 2;
       const half = span / (FRAME_TOP - FRAME_BOTTOM); // semialtezza visibile (m)
       const dist = Math.max(17, half / Math.tan((FOV / 2) * (Math.PI / 180)));
+      const shift = FRAME_SHIFT * half;
       const ty = -FRAME_BOTTOM * half;
-      if (preset === 'video') pos.set(dist / Math.SQRT2, 2.0, dist / Math.SQRT2);
-      else pos.set(0, 3.5, dist);
+      if (preset === 'video') pos.set(dist / Math.SQRT2, 2.0 + shift, dist / Math.SQRT2);
+      else pos.set(0, 3.5 + shift, dist);
       target.set(0, ty, 0);
       break;
     }

@@ -18,7 +18,13 @@ function useSimulation() {
   const [cutaway, setCutaway] = useState(false);
   const [guides, setGuides] = useState(false);
   const [preset, setPreset] = useState('video');
-  const [panelOpen, setPanelOpen] = useState(true);
+  const [panelOpen, setPanelOpen] = useState(false);
+  const viewOffsetRef = useRef(0); // spostamento verticale persistente delle inquadrature fisse
+  const viewPendingRef = useRef(0); // spostamento ancora da applicare alla vista libera
+  const panView = useCallback((dy) => {
+    viewOffsetRef.current += dy;
+    viewPendingRef.current += dy;
+  }, []);
   const onTick = useCallback((t) => setUiT(t), []);
   const onEnd = useCallback(() => {
     playingRef.current = false;
@@ -100,6 +106,9 @@ function useSimulation() {
     setPreset,
     panelOpen,
     setPanelOpen,
+    viewOffsetRef,
+    viewPendingRef,
+    panView,
     onTick,
     onEnd,
     onUserCamera,

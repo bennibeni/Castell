@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { ui } from './styles.js';
 import { topHeightAt, present, phaseAt, baixLoadAt, PIS_FEET } from '../simulation/status.js';
 import { PIS_COLORS, PIS_NAMES, PINYA_COLOR } from '../simulation/constants.js';
@@ -23,6 +24,7 @@ function Stat({ label, value }) {
 }
 
 function StatusPanels({ plan, uiT, panelOpen, setPanelOpen }) {
+  const [phasePanelOpen, setPhasePanelOpen] = useState(false);
   const top = topHeightAt(plan, uiT);
   const inCastell = plan.athletes.filter((a) => a.climber && present(a, uiT)).length;
   const phase = phaseAt(plan, uiT);
@@ -45,37 +47,63 @@ function StatusPanels({ plan, uiT, panelOpen, setPanelOpen }) {
       {/* scheda fase */}
       <div
         style={{
-          ...ui.glass,
           position: 'absolute',
           top: 16,
           left: 16,
-          padding: '14px 16px',
-          width: 'min(360px, calc(100vw - 120px))',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-start',
+          gap: 8,
         }}
       >
-        <div style={ui.kicker}>Castell 4 de 8</div>
-        <div style={{ fontSize: 20, fontWeight: 650, marginTop: 6 }}>{phase.title}</div>
-        <div
-          style={{ fontSize: 13, lineHeight: 1.45, color: '#bdb8ad', marginTop: 4, minHeight: 38 }}
+        <button
+          onClick={() => setPhasePanelOpen((open) => !open)}
+          style={ui.chip(phasePanelOpen)}
+          aria-expanded={phasePanelOpen}
+          aria-controls="castell-phase-panel"
         >
-          {phase.sub}
-        </div>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: '10px 16px',
-            marginTop: 12,
-          }}
-        >
-          <Stat label="Altezza della cima" value={`${top.toFixed(1)} m`} />
-          <Stat label="Nel castell / pinya" value={`${inCastell} / 70`} />
-          <Stat label="Carico su ogni baix" value={`≈ ${Math.round(baixLoadAt(plan, uiT))} kg`} />
-          <Stat
-            label="Piani completi"
-            value={`${[1, 2, 3, 4, 5, 6, 7, 8].filter((p) => plan.pis[p].members.every((a) => present(a, uiT))).length} / 8`}
-          />
-        </div>
+          {phasePanelOpen ? 'Nascondi scheda' : 'Scheda'}
+        </button>
+        {phasePanelOpen && (
+          <div
+            id="castell-phase-panel"
+            style={{
+              ...ui.glass,
+              padding: '14px 16px',
+              width: 'min(360px, calc(100vw - 120px))',
+            }}
+          >
+            <div style={ui.kicker}>Castell 4 de 8</div>
+            <div style={{ fontSize: 20, fontWeight: 650, marginTop: 6 }}>{phase.title}</div>
+            <div
+              style={{
+                fontSize: 13,
+                lineHeight: 1.45,
+                color: '#bdb8ad',
+                marginTop: 4,
+                minHeight: 38,
+              }}
+            >
+              {phase.sub}
+            </div>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: '10px 16px',
+                marginTop: 12,
+              }}
+            >
+              <Stat label="Altezza della cima" value={`${top.toFixed(1)} m`} />
+              <Stat label="Nel castell / pinya" value={`${inCastell} / 70`} />
+              <Stat label="Carico su ogni baix" value={`≈ ${Math.round(baixLoadAt(plan, uiT))} kg`} />
+              <Stat
+                label="Piani completi"
+                value={`${[1, 2, 3, 4, 5, 6, 7, 8].filter((p) => plan.pis[p].members.every((a) => present(a, uiT))).length} / 8`}
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       {/* tabella piani */}

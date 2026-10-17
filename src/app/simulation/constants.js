@@ -74,8 +74,9 @@ const PINYA_COLOR = '#8d939c';
 const CAP_COLOR = '#d9b45c';
 const NAVY = '#1f2b4f';
 const FOV = 42; // campo visivo verticale della camera (gradi)
-const FRAME_BOTTOM = -0.62; // posizione verticale del pavimento sullo schermo (-1 = fondo, 1 = cima)
-const FRAME_TOP = 0.88; // posizione verticale della cima (+2 m) sullo schermo
+const FRAME_SHIFT = 0.18;
+const FRAME_BOTTOM = -0.62 - FRAME_SHIFT; // pavimento al 10% dal fondo
+const FRAME_TOP = 0.88 - FRAME_SHIFT; // cima (+2 m) al 15% dall'alto
 const MANNEQUIN_COLOR = '#cfc6b6'; // legno chiaro dei manichini
 const JOINT_COLOR = '#1b1f2a'; // articolazioni evidenziate
 // masse ipotizzate (kg) per il calcolo del carico sui baixos
@@ -117,6 +118,7 @@ export {
   CAP_COLOR,
   NAVY,
   FOV,
+  FRAME_SHIFT,
   FRAME_BOTTOM,
   FRAME_TOP,
   MANNEQUIN_COLOR,

@@ -41,6 +41,8 @@ const Scene = memo(function Scene({
   preset,
   onUserCamera,
   athleteScene,
+  viewOffsetRef,
+  viewPendingRef,
 }) {
   const rigs = useRef([]);
   const register = useCallback((i, r) => {
@@ -105,10 +107,21 @@ const Scene = memo(function Scene({
         !(cutaway && p.x * cx + p.z * cz > 0.12) && !(preset === 'centro' && a.role === 'agulla');
     }
 
+    const pending = viewPendingRef.current;
+    viewPendingRef.current = 0;
     if (controls && presetGoal(preset, topHeightAt(plan, t), goalPos, goalTarget)) {
+      // camera e mira traslano insieme: l'inclinazione della vista non cambia
+      if (preset === 'video' || preset === 'faccia') {
+        goalPos.y += viewOffsetRef.current;
+        goalTarget.y += viewOffsetRef.current;
+      }
       const k = 1 - Math.exp(-Math.min(dt, 0.25) * 2.4);
       camera.position.lerp(goalPos, k);
       controls.target.lerp(goalTarget, k);
+      controls.update();
+    } else if (controls && pending) {
+      camera.position.y += pending;
+      controls.target.y += pending;
       controls.update();
     }
 

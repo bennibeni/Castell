@@ -29,6 +29,8 @@ function AcrobatSimulation() {
     uiT,
     panelOpen,
     setPanelOpen,
+    viewOffsetRef,
+    viewPendingRef,
   } = simulation;
   const { controlsRef, controlsHeight, topPx } = useSimulationLayout(setPanelOpen);
   return (
@@ -58,6 +60,8 @@ function AcrobatSimulation() {
           cutaway={cutaway}
           guides={guides}
           preset={preset}
+          viewOffsetRef={viewOffsetRef}
+          viewPendingRef={viewPendingRef}
         />
       </Canvas>
       <StatusPanels plan={plan} uiT={uiT} panelOpen={panelOpen} setPanelOpen={setPanelOpen} />

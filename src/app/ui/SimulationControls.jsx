@@ -30,6 +30,7 @@ function SimulationControls({ controlsRef, simulation, modelStatus }) {
     DESC,
     speed,
     changeSpeed,
+    panView,
   } = simulation;
   return (
     <div
@@ -51,6 +52,22 @@ function SimulationControls({ controlsRef, simulation, modelStatus }) {
             {v.label}
           </button>
         ))}
+        <button
+          style={ui.chip(false)}
+          onClick={() => panView(-1)}
+          title="Scroll up: la torre sale nell'inquadratura"
+          aria-label="Scroll up"
+        >
+          ▲
+        </button>
+        <button
+          style={ui.chip(false)}
+          onClick={() => panView(1)}
+          title="Scroll down: la torre scende nell'inquadratura"
+          aria-label="Scroll down"
+        >
+          ▼
+        </button>
         <span style={{ width: 8 }} />
         <button style={ui.chip(useExternalModel)} onClick={() => setUseExternalModel((x) => !x)}>
           Modello GLB
