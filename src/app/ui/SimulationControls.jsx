@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 
 import { CAM } from '../scene/camera.js';
 import { ui } from './styles.js';
@@ -47,6 +48,7 @@ function SimulationControls({ controlsRef, simulation, modelStatus }) {
       }}
     >
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, justifyContent: 'center' }}>
+        <Link href="/settings" style={{ ...ui.chip(false), textDecoration: 'none' }}>Settings · Atlete</Link>
         {Object.entries(CAM).map(([k, v]) => (
           <button key={k} style={ui.chip(preset === k)} onClick={() => setPreset(k)}>
             {v.label}

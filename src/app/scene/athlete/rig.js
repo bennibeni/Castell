@@ -1,7 +1,6 @@
 import { Group } from 'three';
 import { clone } from 'three/addons/utils/SkeletonUtils.js';
 
-export const ATHLETE_MODEL_URL = '/models/athlete.glb';
 export const UNIFORM_MATERIAL = 'Castell_Uniform';
 
 // Coordinate glTF: metri, +Y verso l'alto, viso verso +Z, braccia lungo i fianchi.
@@ -35,6 +34,7 @@ export function inspectAthleteModel(scene) {
   const errors = [];
   const joints = {};
   let uniformFound = false;
+  let noUniform = false;
   for (const [key, spec] of Object.entries(JOINTS)) {
     const matches = [];
     scene.traverse((node) => {
@@ -68,13 +68,14 @@ export function inspectAthleteModel(scene) {
       errors.push(`${ancestor.name || 'Radice'}: trasformazione incompatibile`);
   }
   scene.traverse((node) => {
+    if (node.userData?.castellNoUniform === true) noUniform = true;
     if (!node.isMesh) return;
     for (const material of Array.isArray(node.material) ? node.material : [node.material]) {
       if (material?.name === UNIFORM_MATERIAL && material.color) uniformFound = true;
     }
   });
-  if (!uniformFound) errors.push(`Materiale ${UNIFORM_MATERIAL} mancante`);
-  return { valid: errors.length === 0, errors, joints };
+  if (!uniformFound && !noUniform) errors.push(`Materiale ${UNIFORM_MATERIAL} mancante`);
+  return { valid: errors.length === 0, errors, joints, noUniform };
 }
 
 export function createAthleteInstance(source) {
@@ -134,3 +135,7 @@ export function applyPose(rig, p, scale) {
   rig.elbowL.rotation.x = p.aL[2];
   rig.elbowR.rotation.x = p.aR[2];
 }
+
+
+
+

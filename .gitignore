@@ -5,3 +5,7 @@ out/
 !.env.example
 *.log
 .DS_Store
+
+# Sorgenti grafici, render e archivi conservati solo localmente.
+/blender/
+/artifacts/

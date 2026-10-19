@@ -1,12 +1,23 @@
 # Migliorare le atlete con Blender
 
-Il modello attivo è `public/models/athlete.glb`. Il file
-`public/models/athlete-reference.glb` è una copia di riferimento da cui partire.
-Entrambi sono veri GLB, già caricabili dall'applicazione.
+## Corpo continuo senza vestiti
+
+La prima versione con corpo di libreria, pesi di deformazione e capelli
+dell'originale è in `blender/Castell-atleta.blend`.
+Il flusso di esportazione specifico è descritto in
+[`blender/LEGGIMI.md`](../blender/LEGGIMI.md): richiede la finalizzazione del GLB
+per collegare lo skinning ai controlli di Castell. Questo modello dichiara
+esplicitamente `castellNoUniform`; i colori per ruolo lasciano la pelle invariata.
+Le istruzioni successive descrivono anche il riferimento procedurale originale.
+
+I componenti attivi sono in `public/models/catalog/`; la composizione viene
+scelta nella pagina Settings. I precedenti GLB sono stati archiviati localmente
+in `artifacts/public-archive/models/`, escluso dalla pubblicazione.
+`npm run model:reference` crea un riferimento locale in `blender/athlete-reference.glb`.
 
 ## Primo lavoro in Blender
 
-1. Apri Blender e importa **File → Import → glTF 2.0**, scegliendo `athlete-reference.glb`.
+1. Esegui `npm run model:reference`, poi importa `blender/athlete-reference.glb` in Blender.
 2. Salva il tuo progetto `.blend` in una cartella di lavoro: è il sorgente modificabile.
 3. Nell'Outliner trovi il contenitore `Castell_Athlete`, i nodi di articolazione
    `Castell_*` e, sotto di essi, le mesh di corpo, viso, capelli e vestiti.
@@ -16,8 +27,9 @@ Entrambi sono veri GLB, già caricabili dall'applicazione.
    anche gli oggetti vuoti; conserva i materiali. Esporta nella posa di riposo,
    senza applicare trasformazioni ai nodi `Castell_*`.
 6. Dalla cartella Castell esegui `npm run model:validate -- "C:\percorso\modello.glb"`.
-   Se passa, copia il file su `public/models/athlete.glb` e ricarica la pagina
-   (Ctrl+F5 se il browser conserva la copia precedente).
+   Se passa, esporta il componente in `public/models/catalog/` e registra il
+   relativo percorso in `src/app/scene/athlete/catalog.js`. Vedi anche
+   [composizione delle atlete](ATHLETE-SETTINGS.md).
 7. Controlla salita, torre completa e discesa. Il pulsante **Modello GLB** permette
    di confrontare il risultato con le figure standard.
 
@@ -88,7 +100,7 @@ npm test
 npm run build
 ```
 
-`npm run model:reference` rigenera soltanto `athlete-reference.glb`, senza
+`npm run model:reference` rigenera soltanto `blender/athlete-reference.glb`, senza
 sovrascrivere il modello attivo. Il generatore è `scripts/create-athlete-reference.mjs`;
 la forma iniziale è definita in `scene/athlete/referenceModel.js`.
 

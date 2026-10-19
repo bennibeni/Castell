@@ -46,13 +46,16 @@ Il sorgente originale nel progetto Next13 rimane invariato.
 
 ## Modelli modificabili con Blender
 
-Il pulsante **Modello GLB** usa `public/models/athlete.glb` al posto delle figure
-procedurali. Il modello di partenza da importare in Blender è
-`public/models/athlete-reference.glb`. Le pose restano guidate dalla simulazione.
+Il pulsante **Modello GLB** usa la composizione scelta in **Settings · Atlete**,
+caricando corpi e teste da `public/models/catalog/`. Le pose restano guidate
+dalla simulazione. Le sorgenti Blender sono conservate localmente in `blender/`.
+All'avvio si usa **Manichino Castell + Testa del manichino originale**.
+Le composizioni applicate nei Settings valgono per la sessione corrente;
+un ricaricamento completo ripristina la composizione iniziale.
 
 La [guida Blender](docs/BLENDER.md) spiega come modificare le mesh, conservare le
 articolazioni, verificare il GLB e riportarlo nell'app. Il comando
-`npm run model:validate` controlla il modello attivo. Se il file è assente o
+`npm run model:validate` controlla il corpo manichino del catalogo. Se un asset è assente o
 incompatibile, l'app mostra il motivo e usa le figure standard.
 
 ## Verifica
@@ -62,3 +65,11 @@ istanti con i risultati salvati prima del refactoring. Controlla anche altezza,
 carico, fasi, numero di atlete e completamento degli otto piani.
 
 `npm run build` verifica la compilazione di produzione.
+
+## File locali e pubblicazione
+
+`blender/` e `artifacts/` sono esclusi da Git e dai deploy Vercel. Restano sul
+computer: non sono necessari per eseguire l'app. I precedenti asset pubblici
+sono conservati in `artifacts/public-archive/`, con un manifest dei percorsi.
+In `public/` rimangono soltanto i modelli e le miniature utilizzati dal catalogo.
+Vedi [preparazione del deploy](docs/DEPLOYMENT.md).

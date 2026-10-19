@@ -5,7 +5,7 @@ import { inspectAthleteModel } from '../src/app/scene/athlete/rig.js';
 
 const file = process.argv[2]
   ? path.resolve(process.argv[2])
-  : new URL('../public/models/athlete.glb', import.meta.url);
+  : new URL('../public/models/catalog/body-mannequin.glb', import.meta.url);
 try {
   const bytes = await readFile(file);
   // I modelli con texture richiedono il browser per decodificare le immagini.
@@ -22,8 +22,9 @@ try {
   const result = inspectAthleteModel(gltf.scene);
   if (!result.valid) throw new Error(result.errors.join('\n'));
   console.log(
-    'Modello compatibile: articolazioni, gerarchia, proporzioni di riferimento e materiale della divisa validi.',
+    'Modello compatibile: articolazioni, gerarchia e punti di rotazione validi.',
   );
+  console.log(result.noUniform ? 'Modello senza divisa: i colori per ruolo non modificano la pelle.' : 'Materiale della divisa valido.');
   console.log('Texture e resa visiva vanno controllate anche nel browser.');
   if (gltf.animations.length)
     console.log('Le animazioni presenti sono ignorate: le pose sono guidate dalla simulazione.');

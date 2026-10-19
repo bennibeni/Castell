@@ -12,11 +12,11 @@ globalThis.FileReader ??= class {
   }
 };
 
-const directory = new URL('../public/models/', import.meta.url);
+const directory = new URL('../blender/', import.meta.url);
 const output = new URL('athlete-reference.glb', directory);
 await mkdir(directory, { recursive: true });
 const scene = createReferenceAthlete();
 const glb = await new GLTFExporter().parseAsync(scene, { binary: true, onlyVisible: false });
 await writeFile(output, Buffer.from(glb));
 console.log(`Modello di riferimento creato: ${output.pathname} (${glb.byteLength} byte)`);
-console.log('Il modello attivo athlete.glb non viene sovrascritto.');
+console.log('Il catalogo pubblico non viene modificato. Il riferimento resta locale in blender/.');

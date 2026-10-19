@@ -1,0 +1,10 @@
+.git/
+node_modules/
+.next/
+out/
+blender/
+artifacts/
+.env*
+!.env.example
+*.log
+.DS_Store

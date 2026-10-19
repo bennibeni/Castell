@@ -10,13 +10,24 @@ import {
   JOINTS,
 } from '../src/app/scene/athlete/rig.js';
 import { createReferenceAthlete } from '../src/app/scene/athlete/referenceModel.js';
+import { BODIES, HEADS, DEFAULT_COMPOSITION } from '../src/app/scene/athlete/catalog.js';
+import { composeAthlete } from '../src/app/scene/athlete/composition.js';
 import { buildPlan } from '../src/app/simulation/plan.js';
 import { computePose, newPose } from '../src/app/simulation/poses.js';
 
-async function loadActiveModel() {
-  const bytes = await readFile(new URL('../public/models/athlete.glb', import.meta.url));
+async function loadCatalogPart(url) {
+  const bytes = await readFile(new URL(`../public${url}`, import.meta.url));
   const buffer = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
-  return (await new GLTFLoader().parseAsync(buffer, '')).scene;
+  // Node verifies skeletons/material instances; embedded images are decoded by the browser.
+  const loader = new GLTFLoader();
+  loader.register(() => ({ name: 'NodeTextureStub', loadTexture: () => Promise.resolve(null) }));
+  return (await loader.parseAsync(buffer, '')).scene;
+}
+async function loadActiveModel() {
+  const body=BODIES.find(item=>item.id===DEFAULT_COMPOSITION.bodyId);
+  const head=HEADS.find(item=>item.id===DEFAULT_COMPOSITION.headId);
+  const [bodySource,headSource]=await Promise.all([loadCatalogPart(body.url),loadCatalogPart(head.url)]);
+  return composeAthlete(bodySource,headSource,body,head);
 }
 
 test('il GLB distribuito viene caricato e le 90 atlete possono avere pose e materiali indipendenti', async () => {
@@ -24,17 +35,28 @@ test('il GLB distribuito viene caricato e le 90 atlete possono avere pose e mate
   assert.deepEqual(inspectAthleteModel(source).errors, []);
   const first = createAthleteInstance(source);
   const second = createAthleteInstance(source);
+  const secondRestHips = second.hips.position.toArray();
+  const skins = [];
+  first.root.traverse(node => { if (node.isSkinnedMesh) skins.push(node); });
+  for (const skin of skins) {
+    assert.equal(skin.skeleton.bones.find(bone => bone.name === JOINTS.hips.name), first.hips);
+    assert.notEqual(skin.skeleton, second.root.getObjectByName(skin.name).skeleton);
+  }
   const material = (rig) => {
     let found;
     rig.root.traverse((node) => {
-      if (node.material?.name === 'Castell_Uniform') found = node.material;
+      if (node.material?.name === 'Castell_Uniform' || node.material?.name === 'Castell_Skin') found = node.material;
     });
     return found;
   };
   const originalColor = material(first).color.clone();
   first.setColor('#ff0000');
   assert.notEqual(material(first), material(second));
-  assert.equal(material(first).color.getHexString(), 'ff0000');
+  if (material(first).name === 'Castell_Uniform') {
+    assert.equal(material(first).color.getHexString(), 'ff0000');
+  } else {
+    assert.ok(material(first).color.equals(originalColor), 'i colori per ruolo non devono colorare la pelle');
+  }
   assert.ok(material(second).color.equals(originalColor));
   first.setColor(null);
   assert.ok(material(first).color.equals(originalColor));
@@ -50,11 +72,30 @@ test('il GLB distribuito viene caricato e le 90 atlete possono avere pose e mate
     assert.equal(first.armL.rotation.x, pose.aL[0]);
     assert.equal(first.elbowR.rotation.x, pose.aR[2]);
   }
-  assert.deepEqual(second.hips.position.toArray(), JOINTS.hips.position);
+  assert.deepEqual(second.hips.position.toArray(), secondRestHips);
   assert.ok(Math.abs(second.armL.rotation.x) < 1e-12);
   assert.notEqual(first.hips, second.hips);
   first.dispose();
   second.dispose();
+});
+
+test('i colori per ruolo continuano a cambiare soltanto la divisa dei modelli vestiti', () => {
+  const rig = createAthleteInstance(createReferenceAthlete());
+  rig.setColor('#ff0000');
+  rig.root.traverse(node => {
+    if (node.material?.name === 'Castell_Uniform') assert.equal(node.material.color.getHexString(), 'ff0000');
+  });
+  rig.dispose();
+});
+
+test('un modello senza divisa richiede una dichiarazione esplicita', () => {
+  const source = createReferenceAthlete();
+  source.traverse(node => {
+    if (node.material?.name === 'Castell_Uniform') node.material.name = 'SkinOnly';
+  });
+  assert.ok(inspectAthleteModel(source).errors.some(e => e.includes('Castell_Uniform')));
+  source.userData.castellNoUniform = true;
+  assert.deepEqual(inspectAthleteModel(source).errors, []);
 });
 
 test('un modello con articolazioni rinominate, spostate o ruotate viene rifiutato con una diagnosi', () => {

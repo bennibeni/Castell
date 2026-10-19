@@ -1,0 +1,11 @@
+{
+  "include": ["scripts"],
+  "exclude": ["node_modules", ".next", "artifacts", "blender"],
+  "executionEnvironments": [
+    {
+      "root": "scripts",
+      "reportMissingImports": false,
+      "reportMissingModuleSource": false
+    }
+  ]
+}
